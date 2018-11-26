@@ -12,7 +12,7 @@ public class Interface {
 	public static String getUserInput() {
 		return input.nextLine();
 	}
-	
+
 	static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("myDatabase");
 
 	public static void main(String[] args) {
@@ -20,14 +20,13 @@ public class Interface {
 		// Wczytanie statusu parkingu z pliku
 
 		// ParkingSpaceDAO.loadFromFile();
-		
-		
+
 		// Wczytanie z bazy
-		
+
 		// ParkingSpaceDAO.loadDatabase();
 
 		String userInput;
-		
+
 		do {
 
 			System.out.println("Wybierz nr polecenia, nastêpnie zatwierdz klawiszem ENTER");
@@ -35,7 +34,10 @@ public class Interface {
 			System.out.println("[2] - usuñ wybrany pojazd z parkingu");
 			System.out.println("[3] - poka¿ szczegó³y wybranego pojazdu");
 			System.out.println("[4] - poka¿ dostêpn¹ iloœæ miejsc parkingowych");
-			System.out.println("[5] - odczyt z bazy");
+			System.out.println("[5] - odczyt z pliku");
+			System.out.println("[6] - Zapis do pliku");
+			System.out.println("[7] - odczyt z bazy");
+			System.out.println("[8] - zapis do bazy");
 			System.out.println("[x] - zakoñcz program");
 
 			userInput = getUserInput();
@@ -57,7 +59,13 @@ public class Interface {
 			} else if (userInput.equals("4")) {
 				ParkingStatus.parkingStatus();
 			} else if (userInput.equals("5")) {
+				ParkingSpaceDAO.loadFromFile();
+			} else if (userInput.equals("6")) {
+				ParkingSpaceDAO.saveToFile();
+			} else if (userInput.equals("7")) {
 				ParkingSpaceDAO.loadDatabase();
+			} else if (userInput.equals("8")) {
+				ParkingSpaceDAO.saveDatabase();
 			} else if (userInput.equals("x")) {
 				ExitProgram.exitProgram();
 
