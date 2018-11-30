@@ -4,7 +4,7 @@ import java.util.List;
 public class Spaces {
 
 	private List<ParkingSpace> allSpaces = new ArrayList<ParkingSpace>();
-	
+
 	public int getParkingCapacity() {
 		return 10;
 	}
@@ -30,9 +30,11 @@ public class Spaces {
 	public int getFreeSpaces() {
 		return getParkingCapacity() - getOccupiedSpaces();
 	}
-	
+
 	public void addAllParkingSpace(List<ParkingSpace> spaces) {
-		   allSpaces.addAll(spaces);
-		}
+		allSpaces.clear(); // TODO doda³em czyszczenie listy przed kazdym pobraniem rekordow z bazy/pliku
+							// poniewaz wielokrotne pobranie z pliku/bazy dublowalo rekordy. 
+		allSpaces.addAll(spaces);
+	}
 
 }

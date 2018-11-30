@@ -14,7 +14,7 @@ import javax.persistence.TypedQuery;
 
 public class ParkingSpaceDAO {
 
-	// ODCZYT Z BAZY
+
 	private EntityManagerFactory emf;
 	private EntityManager em;
 
@@ -31,26 +31,33 @@ public class ParkingSpaceDAO {
 	public void emfClose() {
 		emf.close();
 	}
+	
+	// ODCZYT Z BAZY
 
-	public void loadDatabase() {
+	public List<ParkingSpace> loadDatabase() {
 		
+		List<ParkingSpace> loadFromDatabase = null;
+
 		em = emf.createEntityManager();
-		
-		TypedQuery<ParkingSpace> query = em.createQuery("select s from ParkingSpace s", ParkingSpace.class);
-		List<ParkingSpace> parkingSpacesFromJPA = query.getResultList();
-		System.out.println("Iloœæ wczytanych pojazdów: " + parkingSpacesFromJPA.size());
 
-		Interface.spaces.addAllParkingSpace(parkingSpacesFromJPA);
+		TypedQuery<ParkingSpace> query = em.createQuery("select s from ParkingSpace s", ParkingSpace.class);
+		loadFromDatabase = query.getResultList();
+		System.out.println("Iloœæ wczytanych pojazdów: " + loadFromDatabase.size());
+
+		//spaces2.addAllParkingSpace(parkingSpacesFromJPA);
 
 		em.close();
+		
+		return loadFromDatabase;
 	}
+	
 
 	// ZAPIS DO BAZY
 
-	public void saveDatabase() {
-		
+	public void saveDatabase(List<ParkingSpace> saveSpaces) {
+
 		em = emf.createEntityManager();
-		
+
 		// otwarcie strumienia dodawania do bazy danych
 		em.getTransaction().begin();
 
@@ -60,11 +67,12 @@ public class ParkingSpaceDAO {
 
 		// dodanie do bazy
 		ParkingSpace parkingSpace;
-		for (int i = 0; i < Interface.spaces.getAllSpaces().size(); i++) { // <-------
-			parkingSpace = Interface.spaces.getAllSpaces().get(i); // <-------
-			em.merge(parkingSpace);
+		for (int i = 0; i < saveSpaces.size(); i++) {
+			parkingSpace = saveSpaces.get(i);
+			em.merge(parkingSpace); // <------ persist nie dzia³a. b³¹d: detached entity passed to persist:
+									// ParkingSpace
 		}
-		
+
 		// zamkniêcie strumienia
 		em.getTransaction().commit();
 
@@ -74,16 +82,18 @@ public class ParkingSpaceDAO {
 
 	// ODCZYT Z PLIKU
 
-	public void loadFromFile() {
+	public List<ParkingSpace> loadFromFile() {
+
+		List<ParkingSpace> LoadAllSpaces = null;
+
 		try {
 			FileInputStream fis = new FileInputStream("bazapojazdow.txt");
 			try {
 				ObjectInputStream ois = new ObjectInputStream(fis);
 
 				try {
-					List<ParkingSpace> LoadAllSpaces = (List<ParkingSpace>) ois.readObject();
+					LoadAllSpaces = (List<ParkingSpace>) ois.readObject();
 					System.out.println("Rozmiar listy po za³adowaniu : " + LoadAllSpaces.size());
-					Interface.spaces.addAllParkingSpace(LoadAllSpaces);
 				} catch (ClassNotFoundException e) {
 
 					System.out.println(e.getMessage());
@@ -96,18 +106,19 @@ public class ParkingSpaceDAO {
 
 		} catch (FileNotFoundException e) {
 			System.out.println(e.getMessage());
-
 		}
+
+		return LoadAllSpaces;
 	}
 
 	// ZAPIS DO PLIKU
 
-	public void saveToFile() {
+	public void saveToFile(List<ParkingSpace> saveSpaces) {
 		try {
 			FileOutputStream fos = new FileOutputStream("bazapojazdow.txt");
 			try {
 				ObjectOutputStream oos = new ObjectOutputStream(fos);
-				oos.writeObject(Interface.spaces.getAllSpaces());
+				oos.writeObject(saveSpaces);
 				oos.close();
 				System.out.println("Zapisano status parkingu do pliku");
 			} catch (IOException e) {
@@ -119,5 +130,4 @@ public class ParkingSpaceDAO {
 		}
 
 	}
-
 }
