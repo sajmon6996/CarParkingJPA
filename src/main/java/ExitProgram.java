@@ -2,6 +2,8 @@
 public class ExitProgram {
 	public static void exitProgram() {
 		
+	ParkingSpaceDAO parkingSpaceDAO = new ParkingSpaceDAO();	
+		
 		// Zapis do pliku
 		
 		// ParkingSpaceDAO.saveToFile();
@@ -11,7 +13,7 @@ public class ExitProgram {
 
 		// ParkingSpaceDAO.saveDatabase();
 
-		Interface.entityManagerFactory.close();			// <-------
+		parkingSpaceDAO.emfClose();
 		
 		System.out.println("Koniec programu");
 

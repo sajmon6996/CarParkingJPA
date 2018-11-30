@@ -7,48 +7,74 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 public class ParkingSpaceDAO {
 
-				// ODCZYT Z BAZY
-	
-	public static void loadDatabase() {
-		EntityManager entityManager = Interface.entityManagerFactory.createEntityManager();
+	// ODCZYT Z BAZY
+	private EntityManagerFactory emf;
+	private EntityManager em;
 
-		TypedQuery<ParkingSpace> query = entityManager.createQuery("select s from ParkingSpace s", ParkingSpace.class);
+	public EntityManagerFactory getEntityManagerFactory() {
+		emf = Persistence.createEntityManagerFactory("myDatabase");
+		return emf;
+	}
+
+	public EntityManager getEntityManager() {
+		em = emf.createEntityManager();
+		return em;
+	}
+
+	public void emfClose() {
+		emf.close();
+	}
+
+	public void loadDatabase() {
+		
+		em = emf.createEntityManager();
+		
+		TypedQuery<ParkingSpace> query = em.createQuery("select s from ParkingSpace s", ParkingSpace.class);
 		List<ParkingSpace> parkingSpacesFromJPA = query.getResultList();
 		System.out.println("Iloœæ wczytanych pojazdów: " + parkingSpacesFromJPA.size());
 
 		Interface.spaces.addAllParkingSpace(parkingSpacesFromJPA);
 
-		entityManager.close();
+		em.close();
 	}
-	
-				//	ZAPIS DO BAZY
-	
-	public static void saveDatabase() {
-		EntityManager entityManager = Interface.entityManagerFactory.createEntityManager();		// <-------
 
+	// ZAPIS DO BAZY
+
+	public void saveDatabase() {
+		
+		em = emf.createEntityManager();
+		
 		// otwarcie strumienia dodawania do bazy danych
-		entityManager.getTransaction().begin();
+		em.getTransaction().begin();
+
+		// usuwa istniej¹ce rekordy z bazy
+		Query q1 = em.createQuery("DELETE FROM ParkingSpace");
+		q1.executeUpdate();
+
 		// dodanie do bazy
 		ParkingSpace parkingSpace;
-		for (int i = 0; i < Interface.spaces.getAllSpaces().size(); i++) {						// <-------
-			parkingSpace = Interface.spaces.getAllSpaces().get(i);								// <-------
-			entityManager.merge(parkingSpace);
+		for (int i = 0; i < Interface.spaces.getAllSpaces().size(); i++) { // <-------
+			parkingSpace = Interface.spaces.getAllSpaces().get(i); // <-------
+			em.merge(parkingSpace);
 		}
-		// zamkniêcie strumienia
-		entityManager.getTransaction().commit();
-
-		entityManager.close();
-
 		
+		// zamkniêcie strumienia
+		em.getTransaction().commit();
+
+		em.close();
+
 	}
 
-				// ODCZYT Z PLIKU
-	
-	public static void loadFromFile() {
+	// ODCZYT Z PLIKU
+
+	public void loadFromFile() {
 		try {
 			FileInputStream fis = new FileInputStream("bazapojazdow.txt");
 			try {
@@ -74,9 +100,9 @@ public class ParkingSpaceDAO {
 		}
 	}
 
-				// ZAPIS DO PLIKU
-	
-	public static void saveToFile() {
+	// ZAPIS DO PLIKU
+
+	public void saveToFile() {
 		try {
 			FileOutputStream fos = new FileOutputStream("bazapojazdow.txt");
 			try {

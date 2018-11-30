@@ -8,12 +8,15 @@ public class Interface {
 	static Scanner input = new Scanner(System.in);
 
 	static Spaces spaces = new Spaces();
+	
+	static ParkingSpaceDAO parkingSpaceDAO = new ParkingSpaceDAO();
 
 	public static String getUserInput() {
 		return input.nextLine();
 	}
 
-	static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("myDatabase");
+	//static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("myDatabase");
+	
 
 	public static void main(String[] args) {
 
@@ -25,6 +28,8 @@ public class Interface {
 
 		// ParkingSpaceDAO.loadDatabase();
 
+		parkingSpaceDAO.getEntityManagerFactory();
+		
 		String userInput;
 
 		do {
@@ -59,13 +64,13 @@ public class Interface {
 			} else if (userInput.equals("4")) {
 				ParkingStatus.parkingStatus();
 			} else if (userInput.equals("5")) {
-				ParkingSpaceDAO.loadFromFile();
+				parkingSpaceDAO.loadFromFile();
 			} else if (userInput.equals("6")) {
-				ParkingSpaceDAO.saveToFile();
+				parkingSpaceDAO.saveToFile();
 			} else if (userInput.equals("7")) {
-				ParkingSpaceDAO.loadDatabase();
+				parkingSpaceDAO.loadDatabase();
 			} else if (userInput.equals("8")) {
-				ParkingSpaceDAO.saveDatabase();
+				parkingSpaceDAO.saveDatabase();
 			} else if (userInput.equals("x")) {
 				ExitProgram.exitProgram();
 
