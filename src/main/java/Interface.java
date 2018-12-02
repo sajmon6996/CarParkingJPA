@@ -7,7 +7,7 @@ public class Interface {
 
 	static Spaces spaces = new Spaces();
 
-	static ParkingSpaceDAO parkingSpaceDAO = new ParkingSpaceDAO();
+	static ParkingSpaceDAO1 parkingSpaceDAO = new ParkingSpaceDAO1();
 
 	public static String getUserInput() {
 		return input.nextLine();
@@ -110,7 +110,6 @@ public class Interface {
 
 		spaces.addParkingSpace(parkingSpaceInput);
 
-		// System.out.println(parkingSpaceInput.getSpaceStatus());
 		System.out.println("Dodano pojazd do parkingu.");
 
 	}
@@ -134,8 +133,9 @@ public class Interface {
 			System.out.println("Podaj nr pojazdu do usuniêcia");
 			spaceNumber = Interface.getUserInput();
 			if (numberPattern.matcher(spaceNumber).matches()) {
-				// jest -1 aby numeracja zaczynala sie od 1
+
 				int carNumber = Integer.parseInt(spaceNumber) - 1;
+				// jest -1 aby numeracja zaczynala sie od 1
 
 				if (spaces.getAllSpaces().size() > carNumber && carNumber >= 0) {
 					// TODO gdy uzytkownik poda carNumber=0 to wywala blad ArrayIndexOutOfBounds,
@@ -164,8 +164,9 @@ public class Interface {
 
 			for (int i = 0; i < spaces.getAllSpaces().size(); i++) {
 				parkingSpace = spaces.getAllSpaces().get(i);
-				// i + 1 aby numeracja zaczyna³a siê od 1 a nie od 0
+
 				System.out.println(i + 1 + ": " + parkingSpace.getRegistrationNumber());
+				// i + 1 aby numeracja zaczyna³a siê od 1 a nie od 0
 			}
 
 			System.out.println();
@@ -176,14 +177,11 @@ public class Interface {
 			spaceNumber = getUserInput();
 
 			if (numberPattern.matcher(spaceNumber).matches()) {
-				// jest -1 aby numeracja zaczynala sie od 1
+
 				int carNumber = Integer.parseInt(spaceNumber) - 1;
+				// jest -1 aby numeracja zaczynala sie od 1
 
 				if (spaces.getAllSpaces().size() > carNumber && carNumber >= 0) {
-					// TODO gdy uzytkownik poda carNumber=0 to wywala blad ArrayIndexOutOfBounds,
-					// tzn. ze nie da sie usunac z listy pozycji "-1". Wy¿ej doda³em warunek
-					// && carNumber >= 0 i dzia³a. Czy nie lepiej zaimplemenotwaæ try catch
-					// tego wyj¹tku?
 					ParkingSpace carChosen = spaces.getAllSpaces().get(carNumber);
 					System.out.println(carChosen.getOwnerName() + " " + carChosen.getOwnerSurname());
 					System.out.println(carChosen.getCarBrand() + " " + carChosen.getCarModel());
