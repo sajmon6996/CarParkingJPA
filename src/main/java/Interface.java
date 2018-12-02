@@ -7,7 +7,11 @@ public class Interface {
 
 	static Spaces spaces = new Spaces();
 
-	static ParkingSpaceDAO1 parkingSpaceDAO = new ParkingSpaceDAO1();
+	//static ParkingSpaceDAO1 parkingSpaceDAO = new ParkingSpaceDAO1();
+	
+	static ParkingSpaceDatabaseDAO parkingSpaceDatabaseDAO = new ParkingSpaceDatabaseDAO();
+	
+	static ParkingSpaceFileDAO parkingSpaceFileDAO = new ParkingSpaceFileDAO();
 
 	public static String getUserInput() {
 		return input.nextLine();
@@ -23,7 +27,7 @@ public class Interface {
 
 		// parkingSpaceDAO.loadDatabase();
 
-		parkingSpaceDAO.getEntityManagerFactory();
+		parkingSpaceDatabaseDAO.getEntityManagerFactory();
 
 		String userInput;
 
@@ -59,13 +63,13 @@ public class Interface {
 			} else if (userInput.equals("4")) {
 				parkingStatus();
 			} else if (userInput.equals("5")) {
-				spaces.addAllParkingSpace(parkingSpaceDAO.loadFromFile());
+				spaces.addAllParkingSpace(parkingSpaceFileDAO.loadAll());
 			} else if (userInput.equals("6")) {
-				parkingSpaceDAO.saveToFile(spaces.getAllSpaces());
+				parkingSpaceFileDAO.saveAll(spaces.getAllSpaces());
 			} else if (userInput.equals("7")) {
-				spaces.addAllParkingSpace(parkingSpaceDAO.loadDatabase());
+				spaces.addAllParkingSpace(parkingSpaceDatabaseDAO.loadAll());
 			} else if (userInput.equals("8")) {
-				parkingSpaceDAO.saveDatabase(spaces.getAllSpaces());
+				parkingSpaceDatabaseDAO.saveAll(spaces.getAllSpaces());
 			} else if (userInput.equals("x")) {
 				exitProgram();
 
@@ -212,7 +216,7 @@ public class Interface {
 
 		// ParkingSpaceDAO.saveDatabase();
 
-		parkingSpaceDAO.emfClose();
+		parkingSpaceDatabaseDAO.emfClose();
 
 		System.out.println("Koniec programu");
 
