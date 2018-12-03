@@ -10,21 +10,21 @@ public class ParkingSpaceFileDAO implements ParkingSpaceDAO {
 
 	public List<ParkingSpace> loadAll() {
 
-		List<ParkingSpace> LoadAllSpaces = null;
+		List<ParkingSpace> loadAllSpaces = null;
 
 		try {
-			FileInputStream fis = new FileInputStream("bazapojazdow.txt");
+			FileInputStream fileInputStream = new FileInputStream("bazapojazdow.txt");
 			try {
-				ObjectInputStream ois = new ObjectInputStream(fis);
+				ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
 				try {
-					LoadAllSpaces = (List<ParkingSpace>) ois.readObject();
-					System.out.println("Rozmiar listy po za³adowaniu : " + LoadAllSpaces.size());
+					loadAllSpaces = (List<ParkingSpace>) objectInputStream.readObject();
+					System.out.println("Rozmiar listy po za³adowaniu : " + loadAllSpaces.size());
 				} catch (ClassNotFoundException e) {
 
 					System.out.println(e.getMessage());
 				}
-				ois.close();
+				objectInputStream.close();
 
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
@@ -34,18 +34,18 @@ public class ParkingSpaceFileDAO implements ParkingSpaceDAO {
 			System.out.println(e.getMessage());
 		}
 
-		return LoadAllSpaces;
+		return loadAllSpaces;
 	}
 
 	// ZAPIS DO PLIKU
 
 	public void saveAll(List<ParkingSpace> saveSpaces) {
 		try {
-			FileOutputStream fos = new FileOutputStream("bazapojazdow.txt");
+			FileOutputStream fileOutputStream = new FileOutputStream("bazapojazdow.txt");
 			try {
-				ObjectOutputStream oos = new ObjectOutputStream(fos);
-				oos.writeObject(saveSpaces);
-				oos.close();
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+				objectOutputStream.writeObject(saveSpaces);
+				objectOutputStream.close();
 				System.out.println("Zapisano status parkingu do pliku");
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
