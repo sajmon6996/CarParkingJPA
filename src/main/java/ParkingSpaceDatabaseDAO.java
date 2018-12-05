@@ -1,19 +1,24 @@
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 public class ParkingSpaceDatabaseDAO implements ParkingSpaceDAO {
-	
-	CarParkingJpaApplication carParkingJpaApplication = new CarParkingJpaApplication();
 
+	private final EntityManagerFactory entityManagerFactory;	
+	
+	public ParkingSpaceDatabaseDAO(EntityManagerFactory entityManagerFactory) {
+		this.entityManagerFactory = entityManagerFactory;
+	}
+	
 	// ODCZYT Z BAZY
 
 	public List<ParkingSpace> loadAll() {
 
 		List<ParkingSpace> loadFromDatabase = null;
 
-		EntityManager entityManager = carParkingJpaApplication.entityManagerFactory.createEntityManager();
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
 
 		TypedQuery<ParkingSpace> query = entityManager.createQuery("select s from ParkingSpace s", ParkingSpace.class);
 		loadFromDatabase = query.getResultList();
@@ -28,7 +33,7 @@ public class ParkingSpaceDatabaseDAO implements ParkingSpaceDAO {
 
 	public void saveAll(List<ParkingSpace> saveSpaces) {
 
-		EntityManager entityManager = carParkingJpaApplication.entityManagerFactory.createEntityManager();
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
 
 		// otwarcie strumienia dodawania do bazy danych
 		entityManager.getTransaction().begin();
@@ -41,8 +46,9 @@ public class ParkingSpaceDatabaseDAO implements ParkingSpaceDAO {
 		ParkingSpace parkingSpace;
 		for (int i = 0; i < saveSpaces.size(); i++) {
 			parkingSpace = saveSpaces.get(i);
-			entityManager.merge(parkingSpace); // TODO <------ persist nie dzia³a. b³¹d: detached entity passed to persist:
-									// ParkingSpace
+			entityManager.merge(parkingSpace); // TODO <------ persist nie dzia³a. b³¹d: detached entity passed to
+												// persist:
+			// ParkingSpace
 		}
 
 		// zamkniêcie strumienia

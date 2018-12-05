@@ -6,41 +6,18 @@ import javax.persistence.Persistence;
 
 public class CarParkingJpaApplication {
 
-	static Scanner input = new Scanner(System.in);
-
-	static Spaces spaces = new Spaces();
-
-	// static ParkingSpaceDAO1 parkingSpaceDAO = new ParkingSpaceDAO1();
-
-	static ParkingSpaceDatabaseDAO parkingSpaceDatabaseDAO = new ParkingSpaceDatabaseDAO();
-
-	static ParkingSpaceFileDAO parkingSpaceFileDAO = new ParkingSpaceFileDAO();
-	
-	public static EntityManagerFactory entityManagerFactory;
-
-	public static void getEntityManagerFactory() {
-		entityManagerFactory = Persistence.createEntityManagerFactory("myDatabase");
-	}
-
-	public static void entityManagerFactoryClose() {
-		entityManagerFactory.close();
-	}
-
-	public static String getUserInput() {
-		return input.nextLine();
-	}
-
 	public static void main(String[] args) {
 
-		// Wczytanie statusu parkingu z pliku
+		Scanner input = new Scanner(System.in);
 
-		// parkingSpaceDAO.loadFromFile();
+		Spaces spaces = new Spaces();
 
-		// Wczytanie z bazy
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("myDatabase");
+		
+		ParkingSpaceDAO parkingSpaceDatabaseDAO = new ParkingSpaceDatabaseDAO(entityManagerFactory);
+		ParkingSpaceDAO parkingSpaceFileDAO = new ParkingSpaceFileDAO();
 
-		// parkingSpaceDAO.loadDatabase();
-
-		getEntityManagerFactory();
+		// TODO dodaæ autoodczyt bazy/pliku
 
 		String userInput;
 
@@ -57,7 +34,7 @@ public class CarParkingJpaApplication {
 			System.out.println("[8] - zapis do bazy");
 			System.out.println("[x] - zakoñcz program");
 
-			userInput = getUserInput();
+			userInput = input.nextLine();
 
 			if (userInput.equals("1")) {
 				int occupiedSpaces = spaces.getOccupiedSpaces();
@@ -67,14 +44,14 @@ public class CarParkingJpaApplication {
 					System.out.println("===========================");
 
 				} else {
-					addVehicle();
+					addVehicle(spaces, input);
 				}
 			} else if (userInput.equals("2")) {
-				removeVehicle();
+				removeVehicle(spaces, input);
 			} else if (userInput.equals("3")) {
-				carDetails();
+				carDetails(spaces, input);
 			} else if (userInput.equals("4")) {
-				parkingStatus();
+				parkingStatus(spaces);
 			} else if (userInput.equals("5")) {
 				spaces.addAllParkingSpace(parkingSpaceFileDAO.loadAll());
 			} else if (userInput.equals("6")) {
@@ -84,45 +61,40 @@ public class CarParkingJpaApplication {
 			} else if (userInput.equals("8")) {
 				parkingSpaceDatabaseDAO.saveAll(spaces.getAllSpaces());
 			} else if (userInput.equals("x")) {
-				exitProgram();
+				exitProgram(entityManagerFactory);
 
 			}
 		} while (!"x".equalsIgnoreCase(userInput));
 
-		// } while (!userInput.equalsIgnoreCase("x"));
-
-		// (!userInput.equals("x")); - zapytaæ siê czym siê ró¿ni od
-		// powy¿szego --> equalsIgnoreCase ignoruje wielkoœæ liter
-
 	}
 
-	public static void addVehicle() {
+	public static void addVehicle(Spaces spaces, Scanner input) {
 
 		ParkingSpace parkingSpaceInput = new ParkingSpace();
 
 		do {
 			System.out.println("Podaj imiê");
-			parkingSpaceInput.setOwnerName(getUserInput());
+			parkingSpaceInput.setOwnerName(input.nextLine());
 		} while (parkingSpaceInput.getOwnerName().length() == 0);
 
 		do {
 			System.out.println("Podaj nazwisko");
-			parkingSpaceInput.setOwnerSurname(getUserInput());
+			parkingSpaceInput.setOwnerSurname(input.nextLine());
 		} while (parkingSpaceInput.getOwnerSurname().length() == 0);
 
 		do {
 			System.out.println("Podaj markê samochodu");
-			parkingSpaceInput.setCarBrand(getUserInput());
+			parkingSpaceInput.setCarBrand(input.nextLine());
 		} while (parkingSpaceInput.getCarBrand().length() == 0);
 
 		do {
 			System.out.println("Podaj model samochodu");
-			parkingSpaceInput.setCarModel(getUserInput());
+			parkingSpaceInput.setCarModel(input.nextLine());
 		} while (parkingSpaceInput.getCarModel().length() == 0);
 
 		do {
 			System.out.println("Podaj nr rejestarcyjny pojazdu");
-			parkingSpaceInput.setRegistrationNumber(getUserInput());
+			parkingSpaceInput.setRegistrationNumber(input.nextLine());
 		} while (parkingSpaceInput.getRegistrationNumber().length() == 0);
 
 		spaces.addParkingSpace(parkingSpaceInput);
@@ -131,7 +103,7 @@ public class CarParkingJpaApplication {
 
 	}
 
-	public static void removeVehicle() {
+	public static void removeVehicle(Spaces spaces, Scanner input) {
 
 		if (spaces.getOccupiedSpaces() == 0) {
 			System.out.println("Brak pojazdów na parkingu" + "\n");
@@ -148,17 +120,13 @@ public class CarParkingJpaApplication {
 			String spaceNumber;
 
 			System.out.println("Podaj nr pojazdu do usuniêcia");
-			spaceNumber = CarParkingJpaApplication.getUserInput();
+			spaceNumber = input.nextLine();
 			if (numberPattern.matcher(spaceNumber).matches()) {
 
 				int carNumber = Integer.parseInt(spaceNumber) - 1;
 				// jest -1 aby numeracja zaczynala sie od 1
 
 				if (spaces.getAllSpaces().size() > carNumber && carNumber >= 0) {
-					// TODO gdy uzytkownik poda carNumber=0 to wywala blad ArrayIndexOutOfBounds,
-					// tzn. ze nie da sie usunac z listy pozycji "-1". Wy¿ej doda³em warunek
-					// && carNumber >= 0 i dzia³a. Czy nie lepiej zaimplemenotwaæ try catch
-					// tego wyj¹tku?
 					spaces.getAllSpaces().remove(carNumber);
 
 					System.out.println("Usuniêto pojazd z parkingu");
@@ -173,7 +141,7 @@ public class CarParkingJpaApplication {
 
 	}
 
-	public static void carDetails() {
+	public static void carDetails(Spaces spaces, Scanner input) {
 		if (spaces.getOccupiedSpaces() == 0) {
 			System.out.println("Brak pojazdów na parkingu" + "\n");
 		} else {
@@ -191,7 +159,7 @@ public class CarParkingJpaApplication {
 			String spaceNumber;
 
 			System.out.println("Podaj nr pojazdu");
-			spaceNumber = getUserInput();
+			spaceNumber = input.nextLine();
 
 			if (numberPattern.matcher(spaceNumber).matches()) {
 
@@ -212,25 +180,18 @@ public class CarParkingJpaApplication {
 		}
 	}
 
-	public static void parkingStatus() {
+	public static void parkingStatus(Spaces spaces) {
 
 		System.out.println("Miesjca zajête: " + spaces.getOccupiedSpaces() + "\n");
 		System.out.println("Miejsca wolne: " + spaces.getFreeSpaces() + "\n");
 
 	}
 
-	public static void exitProgram() {
+	public static void exitProgram(EntityManagerFactory entityManagerFactory) {
 
-		// Zapis do pliku
+//TODO dodaæ autozapis bazy/pliku
 
-		// ParkingSpaceDAO.saveToFile();
-
-		// Zapis do bazy
-
-		// ParkingSpaceDAO.saveDatabase();
-
-		entityManagerFactoryClose();
-
+		entityManagerFactory.close();
 		System.out.println("Koniec programu");
 
 	}
