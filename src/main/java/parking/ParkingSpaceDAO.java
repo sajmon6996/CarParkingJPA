@@ -1,3 +1,4 @@
+package parking;
 import java.util.List;
 
 public interface ParkingSpaceDAO {
